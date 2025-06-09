@@ -1,0 +1,317 @@
+[
+    {
+        "id": "31a2b7a0070ae174",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d89b2e1a7837e988",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "fba8fa8f13a68262",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "mqtt",
+        "port": 1883,
+        "clientid": "iot2025_clua_borrajo",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "41665c6869376622",
+        "type": "mqtt in",
+        "z": "31a2b7a0070ae174",
+        "name": "",
+        "topic": "iot2025_clua_borrajo/temperatura",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "fba8fa8f13a68262",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 450,
+        "y": 200,
+        "wires": [
+            [
+                "2bbc04da383f873c",
+                "80e01e6336c1d867"
+            ]
+        ]
+    },
+    {
+        "id": "2bbc04da383f873c",
+        "type": "debug",
+        "z": "31a2b7a0070ae174",
+        "name": "temperatura",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "80e01e6336c1d867",
+        "type": "switch",
+        "z": "31a2b7a0070ae174",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "30",
+                "vt": "str"
+            },
+            {
+                "t": "lt",
+                "v": "20",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 730,
+        "y": 260,
+        "wires": [
+            [
+                "e629bd5f224151fc"
+            ],
+            [
+                "0d59291234492b63"
+            ]
+        ]
+    },
+    {
+        "id": "c6e29d102ad1d9a6",
+        "type": "mqtt out",
+        "z": "31a2b7a0070ae174",
+        "name": "",
+        "topic": "iot2025_clua_borrajo/accion_ventanas",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "fba8fa8f13a68262",
+        "x": 1390,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "0d59291234492b63",
+        "type": "template",
+        "z": "31a2b7a0070ae174",
+        "name": "cerrar",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "cerrar",
+        "output": "str",
+        "x": 930,
+        "y": 320,
+        "wires": [
+            [
+                "5c34e53deae47c31",
+                "c6e29d102ad1d9a6"
+            ]
+        ]
+    },
+    {
+        "id": "5c34e53deae47c31",
+        "type": "debug",
+        "z": "31a2b7a0070ae174",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1200,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "e629bd5f224151fc",
+        "type": "template",
+        "z": "31a2b7a0070ae174",
+        "name": "abrir",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "abrir",
+        "output": "str",
+        "x": 930,
+        "y": 180,
+        "wires": [
+            [
+                "c6e29d102ad1d9a6"
+            ]
+        ]
+    },
+    {
+        "id": "53df679f622a2831",
+        "type": "inject",
+        "z": "31a2b7a0070ae174",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 530,
+        "y": 340,
+        "wires": [
+            [
+                "0d59291234492b63"
+            ]
+        ]
+    },
+    {
+        "id": "ce470414b6edfa6a",
+        "type": "inject",
+        "z": "31a2b7a0070ae174",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 750,
+        "y": 60,
+        "wires": [
+            [
+                "e629bd5f224151fc"
+            ]
+        ]
+    },
+    {
+        "id": "0274c65dff34d086",
+        "type": "inject",
+        "z": "d89b2e1a7837e988",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "msg",
+                "v": "esto es una prueba",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "pruebaa",
+        "payloadType": "str",
+        "x": 280,
+        "y": 120,
+        "wires": [
+            [
+                "43537a59bf307003"
+            ]
+        ]
+    },
+    {
+        "id": "43537a59bf307003",
+        "type": "mqtt out",
+        "z": "d89b2e1a7837e988",
+        "name": "",
+        "topic": "iot2025_clua_borrajo/temperatura",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "fba8fa8f13a68262",
+        "x": 620,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "2ed2f5e62b8f6fed",
+        "type": "mqtt in",
+        "z": "d89b2e1a7837e988",
+        "name": "",
+        "topic": "iot2025_clua_borrajo/accion_ventanas",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "fba8fa8f13a68262",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 450,
+        "y": 360,
+        "wires": [
+            [
+                "704fc7681f063c13"
+            ]
+        ]
+    },
+    {
+        "id": "704fc7681f063c13",
+        "type": "debug",
+        "z": "d89b2e1a7837e988",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 340,
+        "wires": []
+    }
+]
