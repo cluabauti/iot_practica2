@@ -47,6 +47,42 @@
         "sessionExpiry": ""
     },
     {
+        "id": "cf3423d77f0fbf8a",
+        "type": "websocket-listener",
+        "path": "",
+        "wholemsg": "false"
+    },
+    {
+        "id": "2796151a66fc73bc",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "2279b2c9a1737322",
+        "type": "influxdb",
+        "hostname": "influxdb",
+        "port": 8086,
+        "protocol": "http",
+        "database": "iot2025_clua_borrajo",
+        "name": "",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
         "id": "41665c6869376622",
         "type": "mqtt in",
         "z": "31a2b7a0070ae174",
@@ -63,34 +99,18 @@
         "y": 200,
         "wires": [
             [
-                "2bbc04da383f873c",
-                "80e01e6336c1d867"
+                "80e01e6336c1d867",
+                "153a3750a8569257",
+                "c0a32b3e5a2b5caa"
             ]
         ]
-    },
-    {
-        "id": "2bbc04da383f873c",
-        "type": "debug",
-        "z": "31a2b7a0070ae174",
-        "name": "temperatura",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 730,
-        "y": 140,
-        "wires": []
     },
     {
         "id": "80e01e6336c1d867",
         "type": "switch",
         "z": "31a2b7a0070ae174",
         "name": "",
-        "property": "payload",
+        "property": "payload.temperatura",
         "propertyType": "msg",
         "rules": [
             {
@@ -151,26 +171,10 @@
         "y": 320,
         "wires": [
             [
-                "5c34e53deae47c31",
-                "c6e29d102ad1d9a6"
+                "c6e29d102ad1d9a6",
+                "7fc62d020cc02e51"
             ]
         ]
-    },
-    {
-        "id": "5c34e53deae47c31",
-        "type": "debug",
-        "z": "31a2b7a0070ae174",
-        "name": "debug 5",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1200,
-        "y": 400,
-        "wires": []
     },
     {
         "id": "e629bd5f224151fc",
@@ -187,45 +191,84 @@
         "y": 180,
         "wires": [
             [
-                "c6e29d102ad1d9a6"
+                "c6e29d102ad1d9a6",
+                "7fc62d020cc02e51"
             ]
         ]
     },
     {
-        "id": "53df679f622a2831",
+        "id": "7fc62d020cc02e51",
+        "type": "debug",
+        "z": "31a2b7a0070ae174",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1220,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "153a3750a8569257",
+        "type": "debug",
+        "z": "31a2b7a0070ae174",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "c0a32b3e5a2b5caa",
+        "type": "influxdb out",
+        "z": "31a2b7a0070ae174",
+        "influxdb": "2279b2c9a1737322",
+        "name": "",
+        "measurement": "ventana",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 970,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "20c4f272eea3759f",
         "type": "inject",
         "z": "31a2b7a0070ae174",
         "name": "",
-        "props": [],
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
         "repeat": "",
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 530,
-        "y": 340,
+        "payload": "{\"temperatura\":30, \"estado\":false}",
+        "payloadType": "json",
+        "x": 510,
+        "y": 560,
         "wires": [
             [
-                "0d59291234492b63"
-            ]
-        ]
-    },
-    {
-        "id": "ce470414b6edfa6a",
-        "type": "inject",
-        "z": "31a2b7a0070ae174",
-        "name": "",
-        "props": [],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "x": 750,
-        "y": 60,
-        "wires": [
-            [
-                "e629bd5f224151fc"
+                "c0a32b3e5a2b5caa"
             ]
         ]
     },
@@ -303,7 +346,7 @@
         "type": "debug",
         "z": "d89b2e1a7837e988",
         "name": "debug 4",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,

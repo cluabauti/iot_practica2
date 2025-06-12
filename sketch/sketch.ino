@@ -9,13 +9,9 @@
 #include <secret.h>
 
 #define PIN_LED 12
-#define BOT_TOKEN "7618978665:AAHuhrlPt6Uz2XXOc9dn2Ba3SmibbUfoy5w"
-#define CHAT_ID "-4924904468"
 const int TEMP_MIN = 20;
 const int TEMP_MAX = 30;
 
-
-int temp_ini = 15;
 bool estado_vent = false;
 
 WiFiClient espClient;
@@ -23,26 +19,15 @@ PubSubClient client(espClient);
 
 int status = WL_IDLE_STATUS;
 
-// Checks for new messages every 1 second.
-int botRequestDelay = 1000;
-unsigned long lastTimeBotRan;
-
-
 // Datos del Broker 
 
-const char* MQTT_BROKER_ADRESS = "192.168.0.34";//ip local aca, misma que el pc
 const uint16_t MQTT_PORT = 1883;
-const char* MQTT_CLIENT_NAME = "iot2025_clua_borrajo";
-
-
-unsigned long lastNotificationTime = 0; // ultima notificacion
-const unsigned long notificationInterval = 300000; // Tiempo de intervalo entre notificaciones = 5 minutos
+const char* MQTT_CLIENT_NAME = "ESP32_clua_borrajo";
 
 unsigned long lastMeasurement = 0;
 const unsigned long measurementInterval = 30000; // Tiempo entre mediciones = 30 segundos
 
 int temp = 0;
-bool automatico = true;
 
 
 bool abrir_ventanas() {
@@ -68,16 +53,6 @@ bool cerrar_ventanas() {
   }
   return false;
   
-}
-
-void actuar_cambio_temp(){
-  if (temp > TEMP_MAX)
-    abrir_ventanas();
-  else
-    if (temp < TEMP_MIN)
-      cerrar_ventanas();
-    else
-      Serial.println("No accion ante cambio temp");
 }
 
 
@@ -124,24 +99,19 @@ void callback(char* topic, byte* message, unsigned int length){
   
   for (int i = 0; i < length; i++) {
     Serial.print((char)message[i]);
-    messageTemp = (char)message[i];
-  
-    Serial.println();
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
 
-    // Feel free to add more if statements to control more GPIOs with MQTT
-
-    // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
-    // Changes the output state according to the message
-    if (String(topic) == "iot2025_clua_borrajo/accion_ventanas") {
-      Serial.print("Changing output to ");
-      if(messageTemp == "abrir"){
-        Serial.println("abrir");
-        abrir_ventanas();
-      }
-      else if(messageTemp == "cerrar"){
-        Serial.println("cerrar");
-        cerrar_ventanas();
-      }
+  if (String(topic) == "iot2025_clua_borrajo/accion_ventanas") {
+    Serial.print("Changing output to ");
+    if(messageTemp == "abrir"){
+      Serial.println("abrir");
+      abrir_ventanas();
+    }
+    else if(messageTemp == "cerrar"){
+      Serial.println("cerrar");
+      cerrar_ventanas();
     }
   }
 }
@@ -151,7 +121,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print(" MQTT connection...");
     
-    if (client.connect("ESP32Client")) { //OJO credenciales MOSQUITTO MQTT_USER, MQTT_PASS
+    if (client.connect(MQTT_CLIENT_NAME)) {
       Serial.println("connected");
       // Subscribe
       client.subscribe("iot2025_clua_borrajo/accion_ventanas");
@@ -165,7 +135,6 @@ void reconnect() {
   }
 }
 
-//Iniciamos los pines del ESP32
 void setup() {
 
   Serial.begin(115200);
@@ -174,19 +143,10 @@ void setup() {
   client.setServer(MQTT_BROKER_ADRESS, MQTT_PORT);
   client.setCallback(callback);
 
-  configTime(-3 * 3600, 0, "pool.ntp.org");  // UTC-3 para Argentina, por ejemplo
-  // Esperar a que se sincronice
-  struct tm timeinfo;
-  while (!getLocalTime(&timeinfo)) {
-    delay(1000);
-    Serial.println("Esperando hora...");
-  }
-
   pinMode(PIN_LED, OUTPUT);
 }
 
 
-//Iniciamos la funcion bucle que se repetira indefinidamente
 void loop(){
   if (!client.connected()) {
     reconnect();
@@ -198,13 +158,16 @@ void loop(){
   if ((now - lastMeasurement) > measurementInterval) {
     temp = get_temperatura();
 
-    // Convert the value to a char array
-    char tempString[8];
-    dtostrf(temp, 1, 2, tempString);
-    Serial.print("Temperatura: ");
-    Serial.println(tempString);
-    client.publish("iot2025_clua_borrajo/temperatura", tempString);
-    lastNotificationTime = millis();
+    // Crear el JSON
+    StaticJsonDocument<200> doc;
+    doc["temperatura"] = temp;
+    doc["estado"] = estado_vent;
+
+    char jsonBuffer[256];
+    serializeJson(doc, jsonBuffer);
+
+    client.publish("iot2025_clua_borrajo/temperatura", jsonBuffer);
+    lastMeasurement = millis();
 
   }
   delay(1000);
